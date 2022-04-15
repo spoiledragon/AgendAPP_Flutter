@@ -1,5 +1,6 @@
 import 'package:agendapp/screens/home_page.dart';
 import 'package:agendapp/screens/registration_screen.dart';
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 
 class LoginScreen extends StatefulWidget {
@@ -9,6 +10,13 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+//Firebase Auth
+Future<void> main() async {
+WidgetsFlutterBinding.ensureInitialized(); 
+await Firebase.initializeApp();
+}
+//--------------------------------------------------------
+//editing controllers
 class _LoginScreenState extends State<LoginScreen> {
   //form key
   final _formKey = GlobalKey<FormState>();
@@ -17,9 +25,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    //funciones de ingreso
+    void login() {
+      if ((emailController.text == "spoiled") &&
+          (passwordController.text == "digimon123")) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      }
+    }
+
+    //fields
     //email field
     final emailField = TextFormField(
       autofocus: false,
+
       controller: emailController,
       keyboardType: TextInputType.emailAddress,
       //validator: (){},
@@ -28,11 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
           prefixIcon: Icon(Icons.email),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Email",
+          labelText: "Email",
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(40),
           )),
     );
 
@@ -46,13 +68,20 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       obscureText: true,
       textInputAction: TextInputAction.next,
+
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.lock),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
+          labelText: "Password",
+          filled: true,
+          fillColor: Colors.white,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          )),
+              borderRadius: BorderRadius.circular(40),
+              borderSide: BorderSide(
+                color: Colors.white,
+                width: 2,
+              ))),
     );
 
 //boton
@@ -64,10 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomeScreen()));
-
-
+          login();
         },
         child: Text(
           "Login",
@@ -83,11 +109,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     //render
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
-            color: Colors.white,
             child: Padding(
               //para mover que tan grande lo queremos
               padding: const EdgeInsets.fromLTRB(400, 100, 400, 100),

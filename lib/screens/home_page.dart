@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import "package:firedart/firedart.dart";
 
 const apiKey = "";
 const projectId = "";
