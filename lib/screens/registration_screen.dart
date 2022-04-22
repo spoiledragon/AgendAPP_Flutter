@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print, prefer_const_constructors
+
 import "package:flutter/material.dart";
+import "package:http/http.dart";
 
 class RegistrarionScreen extends StatefulWidget {
   const RegistrarionScreen({Key? key}) : super(key: key);
@@ -15,6 +18,19 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
   final emailEditingController = TextEditingController();
   final passwordEditingController = TextEditingController();
   final confirmPasswordEditingController = TextEditingController();
+  //Funcion de Registro
+  void singIn() async {
+    try {
+      var url = "";
+      Response response = await get(Uri.parse(url));
+      print(response.body);
+      if (response.body == "0") {
+        //Si se ha registrado hay que mostrar algo
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

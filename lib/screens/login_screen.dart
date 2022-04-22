@@ -1,7 +1,11 @@
+
+
+// ignore_for_file: avoid_print, prefer_const_constructors
+
 import 'package:agendapp/screens/home_page.dart';
 import 'package:agendapp/screens/registration_screen.dart';
-import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
+import 'package:http/http.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,11 +14,9 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-//Firebase Auth
-Future<void> main() async {
-WidgetsFlutterBinding.ensureInitialized(); 
-await Firebase.initializeApp();
-}
+//--------------------------------------------------------
+
+
 //--------------------------------------------------------
 //editing controllers
 class _LoginScreenState extends State<LoginScreen> {
@@ -26,15 +28,24 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     //funciones de ingreso
-    void login() {
-      if ((emailController.text == "spoiled") &&
-          (passwordController.text == "digimon123")) {
-        Navigator.pushReplacement(
+
+    void login() async {
+  try {
+    var url =
+        "https://spoiledragon.000webhostapp.com/AnxyApp/AnsiAppLogin.php?user="+emailController.text+"&pass="+passwordController.text;
+    Response response = await get(Uri.parse(url));
+    print(response.body);
+    if(response.body=="0"){
+      Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
-      }
     }
+  } catch (e) {
+    print(e);
+  }
+}
 
     //fields
+    //------------------------------------------------------
     //email field
     final emailField = TextFormField(
       autofocus: false,
@@ -58,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
           )),
     );
 
+    //------------------------------------------------------
     //Password  field
     final passwordField = TextFormField(
       autofocus: false,
@@ -83,8 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 2,
               ))),
     );
-
-//boton
+    //------------------------------------------------------
+    //boton
     final loginButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
@@ -106,59 +118,57 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-
+    //-----------------------------------------------------
     //render
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: SingleChildScrollView(
-          child: Container(
-            child: Padding(
-              //para mover que tan grande lo queremos
-              padding: const EdgeInsets.fromLTRB(400, 100, 400, 100),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                        height: 200,
-                        child: Image.asset(
-                          'assets/este.png',
-                          fit: BoxFit.contain,
-                        )),
-                    SizedBox(height: 45),
-                    emailField,
-                    SizedBox(height: 20),
-                    passwordField,
-                    SizedBox(height: 30),
-                    loginButton,
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("No tienes Cuenta?  "),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        RegistrarionScreen()));
-                          },
-                          child: Text(
-                            "Registrate",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
-                                color: Colors.blue),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
+          child: Padding(
+            //para mover que tan grande lo queremos
+            padding: const EdgeInsets.fromLTRB(400, 100, 400, 100),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                      height: 200,
+                      child: Image.asset(
+                        'assets/este.png',
+                        fit: BoxFit.contain,
+                      )),
+                  SizedBox(height: 45),
+                  emailField,
+                  SizedBox(height: 20),
+                  passwordField,
+                  SizedBox(height: 30),
+                  loginButton,
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("No tienes Cuenta?  "),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      RegistrarionScreen()));
+                        },
+                        child: Text(
+                          "Registrate",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Colors.blue),
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
             ),
           ),

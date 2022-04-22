@@ -1,10 +1,22 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:agendapp/widget_done/new_reminder.dart';
+import 'package:agendapp/widget_done/recordatorio.dart';
 import 'package:flutter/material.dart';
 
-const apiKey = "";
-const projectId = "";
+class User {
+  String name;
+  String forma;
+  User(this.name, this.forma);
+}
+
+List<User> Usuarios = [];
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+
+
+//Fin de Pruebas
+//pruebas
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -13,10 +25,48 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    
+      agregar() {
+    for (int i = 0; i < 5; i++) {
+      var b = User("Pablo", "forma $i");
+      Usuarios.add(b);
+    }
+  }
+
+  recorrer() {
+//print using iterator
+    for (var u in Usuarios) {
+      print(u.forma);
+    }
+  }
+
+//Fin de Pruebas
+//pruebas
+//Botones de Prueba
+    final boton1 = Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(30),
+      color: Colors.black,
+      child: MaterialButton(
+        padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        onPressed: () {
+          agregar();
+          recorrer();
+        },
+        child: Text(
+          "Login",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+
+//ya
 
     //aca es todo lo que si se ve
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -24,42 +74,31 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(20),
-          child: Column(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: 100,
-                child: Image.asset(
-                  "assets/logo.jpg",
-                  fit: BoxFit.contain,
+            children: [
+              //izquierda
+              Column(children: <Widget>[
+                reminder(),
+                SizedBox(
+                  height: 50,
                 ),
+                reminder(),
+                SizedBox(
+                  height: 50,
+                ),
+                reminder()
+              ]),
+              //Derecha
+              //OSEA new reminder!---------------------------------------
+              Column(
+                children: <Widget>[
+                  
+                  boton1,
+                  
+                ],
               ),
-              Text("Bienvenido Papi",
-                  style: TextStyle(
-                      //color: Colors.grey,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 20,
-              ),
-              Text("Name",
-                  style: TextStyle(
-                      //color: Colors.amber,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 20,
-              ),
-              Text("Mail",
-                  style: TextStyle(
-                      //color: Colors.amber,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 20,
-              ),
-              ActionChip(label: Text("Log Out"), onPressed: () {}),
             ],
           ),
         ),
