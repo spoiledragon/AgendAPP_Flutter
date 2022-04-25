@@ -1,73 +1,56 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
-import 'package:agendapp/widget_done/new_reminder.dart';
+import 'dart:convert';
 import 'package:agendapp/widget_done/recordatorio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
-class User {
-  String name;
-  String forma;
-  User(this.name, this.forma);
-}
-
-List<User> Usuarios = [];
+import '../clases/reminder_class.dart';
 
 class HomeScreen extends StatefulWidget {
-
-
-//Fin de Pruebas
-//pruebas
-
+  final String email;
+  HomeScreen(this.email);
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Reminder> reminders = [];
+
+  Future<void> fetchReminder() async {
+    reminders.clear();
+    var url =
+        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID=1';
+    Response response = await get(Uri.parse(url));
+    print(response.body);
+
+    var reminderesponse = json.decode(response.body);
+    for (var responsejson in reminderesponse) {
+      reminders.add(Reminder.fromJson(responsejson));
+    }
+    print(reminders[0].id);
+    setState(() {});
+    int seconds = 1;
+    return Future.delayed(Duration(seconds: 3));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchReminder();
+  }
+
   @override
   Widget build(BuildContext context) {
-      agregar() {
-    for (int i = 0; i < 5; i++) {
-      var b = User("Pablo", "forma $i");
-      Usuarios.add(b);
-    }
-  }
-
-  recorrer() {
-//print using iterator
-    for (var u in Usuarios) {
-      print(u.forma);
-    }
-  }
-
-//Fin de Pruebas
-//pruebas
-//Botones de Prueba
-    final boton1 = Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(30),
-      color: Colors.black,
-      child: MaterialButton(
-        padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        onPressed: () {
-          agregar();
-          recorrer();
-        },
-        child: Text(
-          "Login",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-
-//ya
-
+    //Esto si Funciona
+    //print(reminders2);
     //aca es todo lo que si se ve
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => fetchReminder(),
+        child: Icon(Icons.refresh),
+      ),
       appBar: AppBar(
         centerTitle: true,
       ),
@@ -79,28 +62,108 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               //izquierda
-              Column(children: <Widget>[
-                reminder(),
-                SizedBox(
-                  height: 50,
+              //aqui debera ir el refresh
+              Expanded(
+                  child: Container(
+                color: Colors.amber,
+                child: RefreshIndicator(
+                  onRefresh: fetchReminder,
+                  child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: reminders.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                          color: Colors.blue,
+                          child: reminder(reminders[index].reminder,reminders[index].date)
+                          );
+                    },
+                  ),
                 ),
-                reminder(),
-                SizedBox(
-                  height: 50,
-                ),
-                reminder()
-              ]),
+              )),
+
               //Derecha
               //OSEA new reminder!---------------------------------------
-              Column(
-                children: <Widget>[
-                  
-                  boton1,
-                  
-                ],
+              Expanded(
+                child: Column(children: [
+                  addReminder(),
+                ]),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class addReminder extends StatefulWidget {
+  @override
+  State<addReminder> createState() => _addReminderState();
+}
+
+class _addReminderState extends State<addReminder> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController materiaController = TextEditingController();
+  final TextEditingController diaController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final nombreField = TextFormField(
+      autofocus: false,
+      controller: nombreController,
+      onSaved: (value) {
+        nombreController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+          prefixIcon: Icon(Icons.lock),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Nombre",
+          labelText: "Nombre",
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(40),
+              borderSide: BorderSide(
+                color: Colors.white,
+                width: 2,
+              ))),
+    );
+
+    final addBtn = Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(30),
+      color: Colors.blue,
+      child: MaterialButton(
+        padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        minWidth: MediaQuery.of(context).size.width,
+        onPressed: () {
+          //var remi = Recordatorios(nombreController.text, "22-04-2022");
+          // prueba.add(remi);
+        },
+        child: Text(
+          "Create Activity",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+    return Container(
+      width: 300,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Form(
+          key: _formKey,
+          child: Column(children: <Widget>[
+            Text("Añadir Nueva Tarea"),
+            nombreField,
+            addBtn,
+          ]),
         ),
       ),
     );

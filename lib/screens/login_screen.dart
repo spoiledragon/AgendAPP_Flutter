@@ -1,11 +1,10 @@
-
-
-// ignore_for_file: avoid_print, prefer_const_constructors
+// ignore_for_file: avoid_print, prefer_const_constructors, non_constant_identifier_names, unnecessary_null_comparison
 
 import 'package:agendapp/screens/home_page.dart';
 import 'package:agendapp/screens/registration_screen.dart';
 import "package:flutter/material.dart";
 import 'package:http/http.dart';
+import "package:shared_preferences/shared_preferences.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -16,7 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 //--------------------------------------------------------
 
-
 //--------------------------------------------------------
 //editing controllers
 class _LoginScreenState extends State<LoginScreen> {
@@ -25,24 +23,72 @@ class _LoginScreenState extends State<LoginScreen> {
   //editing controller
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  void _showToast(BuildContext context, msg) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+      ),
+    );
+  }
+
+  Future<void> save_data(String text, String text2) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setString("mail", text);
+    await pref.setString("password", text2);
+  }
+
+  @override
+  void initState() {
+    // ignore: todo
+    // TODO: implement initState
+    super.initState();
+    get_data();
+  }
+
+  late String email;
+  late String password;
+  Future<void> get_data() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    email = pref.getString("mail")!;
+    password = pref.getString("password")!;
+
+    if (email != null || email != "") {
+      emailController.text = email;
+      passwordController.text = password;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //funciones de ingreso
 
     void login() async {
-  try {
-    var url =
-        "https://spoiledragon.000webhostapp.com/AnxyApp/AnsiAppLogin.php?user="+emailController.text+"&pass="+passwordController.text;
-    Response response = await get(Uri.parse(url));
-    print(response.body);
-    if(response.body=="0"){
-      Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      try {
+        var url =
+            "https://thelmaxd.000webhostapp.com/Agendapp/login.php?email=" +
+                emailController.text +
+                "&pass=" +
+                passwordController.text;
+
+        //Response response = await get(Uri.parse(url));
+        Response response = await get(Uri.parse(url));
+
+        if (response.body == "0") {
+          //shared preferenes aqui
+          save_data(emailController.text, passwordController.text);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(emailController.text)));
+          _showToast(context, "Logeado con Exito");
+        } else {
+          _showToast(context, "Login Incorrecto");
+        }
+      } catch (e) {
+        print(e);
+      }
     }
-  } catch (e) {
-    print(e);
-  }
-}
 
     //fields
     //------------------------------------------------------
@@ -133,12 +179,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(
-                      height: 200,
-                      child: Image.asset(
-                        'assets/este.png',
-                        fit: BoxFit.contain,
-                      )),
+                  CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: 100,
+                      child: SizedBox(
+                          width: 400,
+                          height: 400,
+                          child: ClipOval(
+                            child: Image.asset(
+                              "assets/este.png",
+                              fit: BoxFit.cover,
+                            ),
+                          ))),
                   SizedBox(height: 45),
                   emailField,
                   SizedBox(height: 20),
@@ -155,8 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      RegistrarionScreen()));
+                                  builder: (context) => RegistrarionScreen()));
                         },
                         child: Text(
                           "Registrate",

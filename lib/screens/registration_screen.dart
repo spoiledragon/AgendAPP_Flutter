@@ -3,6 +3,7 @@
 import "package:flutter/material.dart";
 import "package:http/http.dart";
 
+
 class RegistrarionScreen extends StatefulWidget {
   const RegistrarionScreen({Key? key}) : super(key: key);
 
@@ -12,8 +13,7 @@ class RegistrarionScreen extends StatefulWidget {
 
 class _RegistrarionScreenState extends State<RegistrarionScreen> {
   final _formKey = GlobalKey<FormState>();
-  final firsNameEditingController = TextEditingController();
-  final lastNameEditingController = TextEditingController();
+  final userEditingController = TextEditingController();
   final codeEditingController = TextEditingController();
   final emailEditingController = TextEditingController();
   final passwordEditingController = TextEditingController();
@@ -21,60 +21,71 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
   //Funcion de Registro
   void singIn() async {
     try {
-      var url = "";
+      //https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=krystalpaws&password=patitas123&email=krystal.dragoness@gmail.com&code=213203106
+      var url =
+          "https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=" +
+              userEditingController.text +
+              "&password=" +
+              passwordEditingController.text +
+              "&email=" +
+              emailEditingController.text +
+              "&code=" +
+              codeEditingController.text;
+
+      //print(url);
       Response response = await get(Uri.parse(url));
       print(response.body);
-      if (response.body == "0") {
+      if (response.body == "1") {
+        //Aqui es que si jalo
+        _showToast(context, "Registrado con exito");
+        Navigator.of(context).pop();
         //Si se ha registrado hay que mostrar algo
+      }
+      if (response.body == "0") {
+        _showToast(context, "Codigo Ya registrado");
+      }
+      if (response.body == "2") {
+        _showToast(context, "Registrado sin exito");
       }
     } catch (e) {
       print(e);
     }
   }
 
+  void _showToast(BuildContext context, mensaje) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(mensaje),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-//first Name field
-    final firstNameField = TextFormField(
+//User field
+    final userField = TextFormField(
       autofocus: false,
-      controller: firsNameEditingController,
+      controller: userEditingController,
       keyboardType: TextInputType.emailAddress,
       //validator: (){},
       onSaved: (value) {
-        firsNameEditingController.text = value!;
+        userEditingController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.person),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "FirstName",
+          hintText: "UserName",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           )),
     );
-//Last Name field
-    final lastNameField = TextFormField(
-      autofocus: false,
-      controller: lastNameEditingController,
-      keyboardType: TextInputType.emailAddress,
-      //validator: (){},
-      onSaved: (value) {
-        lastNameEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person),
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "LastName",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          )),
-    );
-//code field
+//Code field
     final codeField = TextFormField(
       autofocus: false,
       controller: codeEditingController,
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.number,
       //validator: (){},
       onSaved: (value) {
         codeEditingController.text = value!;
@@ -100,9 +111,9 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
       },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.mail),
+          prefixIcon: Icon(Icons.email),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "Mail",
+          hintText: "Email",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           )),
@@ -154,7 +165,9 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
       child: MaterialButton(
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
-        onPressed: () {},
+        onPressed: () {
+          singIn();
+        },
         child: Text(
           "Register",
           textAlign: TextAlign.center,
@@ -196,14 +209,11 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 45),
-                    firstNameField,
-                    SizedBox(height: 20),
-                    lastNameField,
-                    SizedBox(height: 20),
-                    emailField,
+                    userField,
                     SizedBox(height: 20),
                     codeField,
+                    SizedBox(height: 20),
+                    emailField,
                     SizedBox(height: 20),
                     passwordField,
                     SizedBox(height: 20),

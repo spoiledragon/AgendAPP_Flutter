@@ -4,10 +4,15 @@ import 'package:flutter/material.dart';
 
 class reminder extends StatefulWidget {
   @override
+  String info;
+  String hora;
+  reminder(this.info,this.hora);
   State<reminder> createState() => _reminderState();
 }
 
 class _reminderState extends State<reminder> {
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,7 +25,7 @@ class _reminderState extends State<reminder> {
         //lado izquierdo
         Container(
           decoration: BoxDecoration(color: Colors.amber),
-          width: 20,
+          width: 5,
         ),
         //Centro
         Container(
@@ -29,10 +34,9 @@ class _reminderState extends State<reminder> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[Text("data recordatorio")]),
+                children: <Widget>[Text(widget.info),Text(widget.hora) ]),
           ),
         ),
-        //Icono
         Container(
           child: Padding(
             padding: const EdgeInsets.all(8.0),

@@ -9,7 +9,6 @@ class new_reminder extends StatelessWidget {
       width: 400,
       decoration: BoxDecoration(
         color: Colors.grey,
-        
       ),
       //foregroundDecoration:
       child: Column(children: [Text("data")]),
