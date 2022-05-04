@@ -1,49 +1,68 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class reminder extends StatefulWidget {
   @override
-  String info;
+  String recordatorio;
   String hora;
-  reminder(this.info,this.hora);
+  String id;
+  String prioridad;
+  reminder(this.recordatorio, this.hora, this.id, this.prioridad);
   State<reminder> createState() => _reminderState();
 }
 
 class _reminderState extends State<reminder> {
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
       height: 150,
       decoration: BoxDecoration(
-        color: Colors.grey,
+        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color.fromARGB(255, 23, 21, 28),
       ),
       child: Row(children: <Widget>[
-        //lado izquierdo
+        //Franja Color
         Container(
           decoration: BoxDecoration(color: Colors.amber),
-          width: 5,
+          width: 10,
         ),
-        //Centro
+        //Contenido
         Container(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
+          width: 200,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              //De este lado iran los textos
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[Text(widget.info),Text(widget.hora) ]),
-          ),
-        ),
-        Container(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-            ),
+                children: [
+                  Text(
+                    widget.recordatorio,
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.justify,
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(widget.hora, style: TextStyle(color: Colors.white)),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(widget.prioridad, style: TextStyle(color: Colors.white)),
+                ],
+              ),
+              //De este lado ira el icono
+              Icon(
+                Icons.book_online,
+                color: Colors.white,
+              )
+            ],
           ),
         ),
       ]),

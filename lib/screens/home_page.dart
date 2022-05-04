@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:agendapp/widget_done/recordatorio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../clases/reminder_class.dart';
 
@@ -44,9 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     //Esto si Funciona
-    //print(reminders2);
     //aca es todo lo que si se ve
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 23, 21, 28),
       floatingActionButton: FloatingActionButton(
         onPressed: () => fetchReminder(),
         child: Icon(Icons.refresh),
@@ -65,22 +66,33 @@ class _HomeScreenState extends State<HomeScreen> {
               //aqui debera ir el refresh
               Expanded(
                   child: Container(
-                color: Colors.amber,
                 child: RefreshIndicator(
                   onRefresh: fetchReminder,
                   child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
+                    padding: const EdgeInsets.all(20),
                     itemCount: reminders.length,
                     itemBuilder: (context, index) {
+                      //mando  a llamar al widget
                       return Container(
-                          color: Colors.blue,
-                          child: reminder(reminders[index].reminder,reminders[index].date)
-                          );
+                          child: reminder(
+                              reminders[index].reminder,
+                              reminders[index].date,
+                              reminders[index].id,
+                              reminders[index].priority));
                     },
                   ),
                 ),
               )),
-
+              //center
+              Expanded(
+                  child: Column(
+                children: [
+                  SfCalendar(
+                    view: CalendarView.month,
+                    backgroundColor: Colors.white,
+                  )
+                ],
+              )),
               //Derecha
               //OSEA new reminder!---------------------------------------
               Expanded(
@@ -109,7 +121,7 @@ class _addReminderState extends State<addReminder> {
 
   @override
   Widget build(BuildContext context) {
-    final nombreField = TextFormField(
+    final recordatorioField = TextFormField(
       autofocus: false,
       controller: nombreController,
       onSaved: (value) {
@@ -119,8 +131,8 @@ class _addReminderState extends State<addReminder> {
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.lock),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "Nombre",
-          labelText: "Nombre",
+          hintText: "Recordatorio",
+          labelText: "Recordatorio",
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -161,7 +173,10 @@ class _addReminderState extends State<addReminder> {
           key: _formKey,
           child: Column(children: <Widget>[
             Text("Añadir Nueva Tarea"),
-            nombreField,
+            recordatorioField,
+            SizedBox(
+              height: 10,
+            ),
             addBtn,
           ]),
         ),
