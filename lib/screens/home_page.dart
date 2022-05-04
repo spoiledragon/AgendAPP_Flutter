@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       appBar: AppBar(
         centerTitle: true,
+        title: Text("AGENDAPP"),
       ),
       body: Center(
         child: Padding(
@@ -74,11 +75,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       //mando  a llamar al widget
                       return Container(
-                          child: reminder(
-                              reminders[index].reminder,
-                              reminders[index].date,
-                              reminders[index].id,
-                              reminders[index].priority));
+                        child: reminder(
+                            reminders[index].reminder,
+                            reminders[index].date,
+                            reminders[index].id,
+                            reminders[index].priority),
+                      );
                     },
                   ),
                 ),
@@ -88,8 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                 children: [
                   SfCalendar(
+                    
                     view: CalendarView.month,
+                    monthViewSettings: MonthViewSettings(showAgenda: true),
                     backgroundColor: Colors.white,
+                    dataSource: MeetingDataSource(_getDataSource()),
                   )
                 ],
               )),
@@ -116,11 +121,13 @@ class addReminder extends StatefulWidget {
 class _addReminderState extends State<addReminder> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController nombreController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   final TextEditingController materiaController = TextEditingController();
   final TextEditingController diaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    //CAMPO DE RECORDATORIO
     final recordatorioField = TextFormField(
       autofocus: false,
       controller: nombreController,
@@ -129,20 +136,42 @@ class _addReminderState extends State<addReminder> {
       },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
+          prefixIcon: Icon(Icons.recommend),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Recordatorio",
           labelText: "Recordatorio",
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
                 color: Colors.white,
                 width: 2,
               ))),
     );
 
+    //CAMPO DE DESCRIPCION
+    final descriptionField = TextFormField(
+      autofocus: false,
+      controller: descriptionController,
+      onSaved: (value) {
+        descriptionController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20, 60, 20, 60),
+          labelText: "Recordatorio",
+          alignLabelWithHint: true,
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: Colors.blue,
+                width: 5,
+              ))),
+    );
+    //BOTON DE AGREGAR
     final addBtn = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
@@ -153,6 +182,7 @@ class _addReminderState extends State<addReminder> {
         onPressed: () {
           //var remi = Recordatorios(nombreController.text, "22-04-2022");
           // prueba.add(remi);
+          addMeeting();
         },
         child: Text(
           "Create Activity",
@@ -165,17 +195,35 @@ class _addReminderState extends State<addReminder> {
         ),
       ),
     );
+    //LO QUE CONTIENE TODO LO QUE SE VE
     return Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.blue,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(10)),
       width: 300,
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Form(
           key: _formKey,
           child: Column(children: <Widget>[
-            Text("Añadir Nueva Tarea"),
+            Text("Añadir Nueva Tarea", style: TextStyle(color: Colors.white)),
+            SizedBox(
+              height: 20,
+            ),
             recordatorioField,
             SizedBox(
-              height: 10,
+              height: 20,
+            ),
+            Text(
+              "Description",
+              style: TextStyle(color: Colors.white),
+            ),
+            descriptionField,
+            SizedBox(
+              height: 20,
             ),
             addBtn,
           ]),
@@ -183,4 +231,72 @@ class _addReminderState extends State<addReminder> {
       ),
     );
   }
+
+  void addMeeting() {
+    final now = DateTime.now();
+    final Meeting a = Meeting("Comida", now,
+        DateTime(now.year, now.month, now.day + 4), Colors.yellow, true);
+    print(a.eventName);
+    print(_getDataSource().length);
+  }
+}
+
+//CLASE PARA LOS CALENDARIOS
+//EJEMPLO EN EL QUE SE AGREGAN DOS RECORDATORIOS
+List<Meeting> _getDataSource() {
+  final List<Meeting> meetings = <Meeting>[];
+  final DateTime today = DateTime.now();
+  final DateTime startTime =
+      DateTime(today.year, today.month, today.day + 1, 9, 0, 0);
+  final DateTime endTime = startTime.add(const Duration(hours: 2));
+  //x somos chavos
+  final DateTime startTime2 =
+      DateTime(today.year, today.month, today.day + 4, 9, 0, 0);
+      final DateTime endTime2 = startTime2.add(const Duration(hours: 10));
+  meetings.add(Meeting(
+      'Conference', startTime, endTime, const Color(0xFF0F8644), false));
+  final Meeting a = Meeting("Proyectacion pero que no se guarda uwu", startTime2,endTime2, Color(0xFF0F8644), true);
+  print(a.eventName);
+  meetings.add(a);
+  return meetings;
+}
+
+class MeetingDataSource extends CalendarDataSource {
+  MeetingDataSource(List<Meeting> source) {
+    appointments = source;
+  }
+
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].from;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].to;
+  }
+
+  @override
+  String getSubject(int index) {
+    return appointments![index].eventName;
+  }
+
+  @override
+  Color getColor(int index) {
+    return appointments![index].background;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    return appointments![index].isAllDay;
+  }
+}
+
+class Meeting {
+  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  String eventName;
+  DateTime from;
+  DateTime to;
+  Color background;
+  bool isAllDay;
 }
