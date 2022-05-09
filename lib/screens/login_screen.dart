@@ -2,6 +2,7 @@
 
 import 'package:agendapp/screens/home_page.dart';
 import 'package:agendapp/screens/registration_screen.dart';
+import 'dart:convert';
 import "package:flutter/material.dart";
 import 'package:http/http.dart';
 import "package:shared_preferences/shared_preferences.dart";
@@ -64,16 +65,17 @@ class _LoginScreenState extends State<LoginScreen> {
     //funciones de ingreso
 
     void login() async {
+      
       try {
         var url =
             "https://thelmaxd.000webhostapp.com/Agendapp/login.php?email=" +
                 emailController.text +
                 "&pass=" +
                 passwordController.text;
-
         //Response response = await get(Uri.parse(url));
         Response response = await get(Uri.parse(url));
-
+        var user_Response = json.decode(response.body);
+        print("Datos"+user_Response.Id);
         if (response.body == "0") {
           //shared preferenes aqui
           save_data(emailController.text, passwordController.text);
