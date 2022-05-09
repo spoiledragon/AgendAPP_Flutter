@@ -3,7 +3,6 @@
 import "package:flutter/material.dart";
 import "package:http/http.dart";
 
-
 class RegistrarionScreen extends StatefulWidget {
   const RegistrarionScreen({Key? key}) : super(key: key);
 
@@ -21,32 +20,38 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
   //Funcion de Registro
   void singIn() async {
     try {
-      //https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=krystalpaws&password=patitas123&email=krystal.dragoness@gmail.com&code=213203106
-      var url =
-          "https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=" +
-              userEditingController.text +
-              "&password=" +
-              passwordEditingController.text +
-              "&email=" +
-              emailEditingController.text +
-              "&code=" +
-              codeEditingController.text;
+      bool emailValid = RegExp("[a-z]+.+@+alumnos.udg.mx")
+          .hasMatch(emailEditingController.text);
+      if (emailValid) {
+        var url =
+            "https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=" +
+                userEditingController.text +
+                "&password=" +
+                passwordEditingController.text +
+                "&email=" +
+                emailEditingController.text +
+                "&code=" +
+                codeEditingController.text;
 
-      //print(url);
-      Response response = await get(Uri.parse(url));
-      print(response.body);
-      if (response.body == "1") {
-        //Aqui es que si jalo
-        _showToast(context, "Registrado con exito");
-        Navigator.of(context).pop();
-        //Si se ha registrado hay que mostrar algo
+        //print(url);
+        Response response = await get(Uri.parse(url));
+        print(response.body);
+        if (response.body == "1") {
+          //Aqui es que si jalo
+          _showToast(context, "Registrado con exito");
+          Navigator.of(context).pop();
+          //Si se ha registrado hay que mostrar algo
+        }
+        if (response.body == "0") {
+          _showToast(context, "Codigo Ya registrado");
+        }
+        if (response.body == "2") {
+          _showToast(context, "Registrado sin exito");
+        }
+      }else{
+        _showToast(context, "Ingresa un Correo Valido");
       }
-      if (response.body == "0") {
-        _showToast(context, "Codigo Ya registrado");
-      }
-      if (response.body == "2") {
-        _showToast(context, "Registrado sin exito");
-      }
+      //https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=krystalpaws&password=patitas123&email=krystal.dragoness@gmail.com&code=213203106
     } catch (e) {
       print(e);
     }
