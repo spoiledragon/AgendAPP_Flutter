@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
 import 'dart:convert';
+import 'package:agendapp/screens/contacts_page.dart';
 import 'package:agendapp/widget_done/recordatorio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -42,9 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchReminder();
   }
 
-  void gotoContactos(){
-
-  }
+  void gotoContactos() {}
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("AGENDAPP"),
-        actions: [IconButton(onPressed: gotoContactos, icon: Icon(Icons.add))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => contact_page(widget.id)));
+              },
+              icon: Icon(Icons.add))
+        ],
       ),
       body: Center(
         child: Padding(
@@ -240,8 +246,7 @@ class _addReminderState extends State<addReminder> {
     final now = DateTime.now();
     final Meeting a = Meeting("Comida", now,
         DateTime(now.year, now.month, now.day + 4), Colors.yellow, true);
-    print(a.eventName);
-    print(_getDataSource().length);
+
   }
 }
 
