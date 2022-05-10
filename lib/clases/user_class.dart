@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final user = userFromJson(jsonString);
-
 import 'dart:convert';
 
 List<User> userFromJson(String str) => List<User>.from(json.decode(str).map((x) => User.fromJson(x)));
@@ -21,14 +17,14 @@ class User {
     String userName;
     String email;
     String code;
-    List<String> error;
+    String error;
 
     factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["Id"],
         userName: json["UserName"],
         email: json["Email"],
         code: json["Code"],
-        error: List<String>.from(json["Error"].map((x) => x)),
+        error: json["Error"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -36,6 +32,6 @@ class User {
         "UserName": userName,
         "Email": email,
         "Code": code,
-        "Error": List<dynamic>.from(error.map((x) => x)),
+        "Error": error,
     };
 }

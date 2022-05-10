@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, prefer_const_constructors, non_constant_identifier_names, unnecessary_null_comparison
 
+import 'package:agendapp/clases/user_class.dart';
 import 'package:agendapp/screens/home_page.dart';
 import 'package:agendapp/screens/registration_screen.dart';
 import 'dart:convert';
@@ -65,24 +66,30 @@ class _LoginScreenState extends State<LoginScreen> {
     //funciones de ingreso
 
     void login() async {
-      
       try {
         var url =
             "https://thelmaxd.000webhostapp.com/Agendapp/login.php?email=" +
                 emailController.text +
                 "&pass=" +
                 passwordController.text;
-        //Response response = await get(Uri.parse(url));
         Response response = await get(Uri.parse(url));
+        //aqui sacamos los datos y los metemos a un array
         var user_Response = json.decode(response.body);
-        print("Datos"+user_Response.Id);
-        if (response.body == "0") {
+        //definimos la lista
+        List<User> Usuarios = [];
+        //recorremos el arreglo en el caso de que haya mas de uno
+        for (var responsejson in user_Response) {
+          Usuarios.add(User.fromJson(responsejson));
+        }
+        print(Usuarios[0].id);
+        //print("Esta data");
+        if (Usuarios[0].error == "69") {
           //shared preferenes aqui
           save_data(emailController.text, passwordController.text);
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => HomeScreen(emailController.text)));
+                  builder: (context) => HomeScreen(Usuarios[0].id)));
           _showToast(context, "Logeado con Exito");
         } else {
           _showToast(context, "Login Incorrecto");

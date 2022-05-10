@@ -49,6 +49,7 @@ class _RegistrarionScreenState extends State<RegistrarionScreen> {
           _showToast(context, "Registrado sin exito");
         }
       }else{
+        
         _showToast(context, "Ingresa un Correo Valido");
       }
       //https://thelmaxd.000webhostapp.com/Agendapp/signin.php?username=krystalpaws&password=patitas123&email=krystal.dragoness@gmail.com&code=213203106
