@@ -9,8 +9,8 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../clases/reminder_class.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String email;
-  HomeScreen(this.email);
+  final String id;
+  HomeScreen(this.id);
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -42,6 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchReminder();
   }
 
+  void gotoContactos(){
+
+  }
+
   @override
   Widget build(BuildContext context) {
     //Esto si Funciona
@@ -55,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("AGENDAPP"),
+        actions: [IconButton(onPressed: gotoContactos, icon: Icon(Icons.add))],
       ),
       body: Center(
         child: Padding(
@@ -90,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                 children: [
                   SfCalendar(
-                    
                     view: CalendarView.month,
                     monthViewSettings: MonthViewSettings(showAgenda: true),
                     backgroundColor: Colors.white,
@@ -252,10 +256,11 @@ List<Meeting> _getDataSource() {
   //x somos chavos
   final DateTime startTime2 =
       DateTime(today.year, today.month, today.day + 4, 9, 0, 0);
-      final DateTime endTime2 = startTime2.add(const Duration(hours: 10));
+  final DateTime endTime2 = startTime2.add(const Duration(hours: 10));
   meetings.add(Meeting(
       'Conference', startTime, endTime, const Color(0xFF0F8644), false));
-  final Meeting a = Meeting("Proyectacion pero que no se guarda uwu", startTime2,endTime2, Color(0xFF0F8644), true);
+  final Meeting a = Meeting("Proyectacion pero que no se guarda uwu",
+      startTime2, endTime2, Color(0xFF0F8644), true);
   print(a.eventName);
   meetings.add(a);
   return meetings;
