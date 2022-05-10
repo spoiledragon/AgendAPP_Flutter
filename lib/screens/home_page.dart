@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, avoid_print, unused_local_variable, avoid_unnecessary_containers, camel_case_types
 
 import 'dart:convert';
 import 'package:agendapp/screens/contacts_page.dart';
@@ -38,12 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    // ignore: todo
     // TODO: implement initState
     super.initState();
     fetchReminder();
   }
 
-  void gotoContactos() {}
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => contact_page(widget.id)));
               },
-              icon: Icon(Icons.add))
+              icon: Icon(Icons.person))
         ],
       ),
       body: Center(
@@ -205,6 +205,7 @@ class _addReminderState extends State<addReminder> {
         ),
       ),
     );
+    // ignore: todo
     //LO QUE CONTIENE TODO LO QUE SE VE
     return Container(
       decoration: BoxDecoration(
