@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
 
+import 'package:agendapp/clases/user_class.dart';
 import 'package:agendapp/widget_done/miniContacto.dart';
 import 'package:flutter/material.dart';
 
@@ -27,39 +28,36 @@ class _contact_pageState extends State<contact_page> {
               ))
         ],
       ),
-      body: Center(
-        child: Container(
-            //AQUI AÑADIMOS UNA FILA PARA PODER SEPARAR EN LISTA DE CONTACTOS Y EL CONTACTO EN SI
-            child: Expanded(
-          child: Row(
-            children: <Widget>[
-              //IZQEUIRDA DE LISTA DE CONTACTOS
-              Column(
-                children: [
-                  ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    //itemCount: reminders.length,
-                    itemBuilder: (context, index) {
-                      //mando  a llamar al widget
-                      return Container(
-                          /*
-                        child: contactCard(
-                            reminders[index].reminder,
-                            reminders[index].date,
-                            reminders[index].id,
-                            reminders[index].priority),
-                          
-                           */
-                      );
-                    },
-                  ),
-                ],
-              )
-              //DERECHA DEL CONTACTO SELECCIONADO
-            ],
-          ),
-        )),
-      ),
+      body: Contact_List(),
     );
+  }
+}
+
+class Contact_List extends StatefulWidget {
+  @override
+  State<Contact_List> createState() => _Contact_ListState();
+}
+
+class _Contact_ListState extends State<Contact_List> {
+  bool loading = false;
+
+  List<User> users = [];
+  @override
+  void initState() {
+    loading = true;
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text("Titulo $index"),
+            subtitle: Text("Hola"),
+          );
+        },
+        itemCount: 100);
   }
 }
