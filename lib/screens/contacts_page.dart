@@ -54,26 +54,27 @@ class _Contact_ListState extends State<Contact_List> {
   void initState() {
     loading = true;
     _loadUser(widget.id);
-    // TODO: implement initState
     super.initState();
   }
 
-  
-void _loadUser(id) async {
-    var url =
-        "https://thelmaxd.000webhostapp.com/Agendapp/contactos.php?userID=" +
-            id;
-    Response response = await get(Uri.parse(url));
-    List<Contact> _contacts = [];
-    var userResponse = json.decode(response.body);
-    for (var Contacto in userResponse) {
-      _contacts.add(Contact.fromJson(Contacto));
-    }
-    setState(() {
-      contacts = _contacts;
-      loading = false;
-    });
-  
+  void _loadUser(id) async {
+    try {
+      var url =
+          "https://thelmaxd.000webhostapp.com/Agendapp/contactos.php?userID=" +
+              id;
+      Response response = await get(Uri.parse(url));
+      List<Contact> _contacts = [];
+      var userResponse = json.decode(response.body);
+      print(userResponse);
+      for (var Contacto in userResponse) {
+        _contacts.add(Contact.fromJson(Contacto));
+      }
+      setState(() {
+        contacts = _contacts;
+        loading = false;
+      });
+    } catch (e) {}
+
     //aqui sacamos los datos y los metemos a un array
   }
 
@@ -86,6 +87,7 @@ void _loadUser(id) async {
     //aqui sacamos los datos y los metemos a un array
     var userResponse = json.decode(response.body);
     print(userResponse);
+    _loadUser(widget.id);
   }
 
   void _showModalBottomSheet(BuildContext context, int id) {
