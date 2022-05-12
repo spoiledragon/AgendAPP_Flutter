@@ -20,7 +20,6 @@ class _contact_pageState extends State<contact_page> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
       body: Contact_List(widget.id),
     );
   }
@@ -37,7 +36,6 @@ class Contact_List extends StatefulWidget {
 
 //INICIO DE LA LISTA QUE DECLARA LA LISTA EN BLANCO ASI NO SE DESARMA SIEMPRE LA LISTA
 class _Contact_ListState extends State<Contact_List> {
-  final _formKey = GlobalKey<FormState>();
   final _nameEditingController = TextEditingController();
   final _emailEditingController = TextEditingController();
   final _telEditingController = TextEditingController();
@@ -66,26 +64,45 @@ class _Contact_ListState extends State<Contact_List> {
         contacts = _contacts;
         loading = false;
       });
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
 
     //aqui sacamos los datos y los metemos a un array
   }
 
   void _delete_user(
-    id,
+    index,
   ) async {
     var url =
         "https://thelmaxd.000webhostapp.com/Agendapp/contact_todelete.php?ID=" +
-            contacts[id].id;
+            contacts[index].id;
     Response response = await get(Uri.parse(url));
     List<Contact> _contacts = [];
-    //aqui sacamos los datos y los metemos a un array
-    var userResponse = json.decode(response.body);
-    print(userResponse);
     _loadUser();
   }
 
-  void _showModalBottomSheet(BuildContext context, int id) {
+      //PARA ENVIAR EL DATO NUEVO
+    void addContact(id) async {
+      
+        //https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=1&name=pedrito&email=borraro@gmail.com&tel=1234
+
+        var url =
+            "https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=" +
+                id +
+                "&name=" +
+                _nameEditingController.text +
+                "&email=" +
+                _emailEditingController.text +
+                "&tel=" +
+                _telEditingController.text;
+        Response response = await get(Uri.parse(url));
+        List<Contact> _contacts = [];
+        //aqui sacamos los datos y los metemos a un array
+        _loadUser();
+    }
+
+  void _showModalBottomSheet(BuildContext context,index) {
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -103,7 +120,7 @@ class _Contact_ListState extends State<Contact_List> {
                 leading: Icon(Icons.delete),
                 title: Text('Delete'),
                 onTap: () {
-                  _delete_user(id);
+                  _delete_user(index);
                   Navigator.pop(context);
                 },
               ),
@@ -112,35 +129,13 @@ class _Contact_ListState extends State<Contact_List> {
         });
   }
 
-  //LO QUE SI SE VE
   @override
   Widget build(BuildContext context) {
     if (loading) {
       return Center(child: CircularProgressIndicator());
     }
 
-    //PARA ENVIAR EL DATO NUEVO
-    void addContact(id) async {
-      try {
-        //https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=1&name=pedrito&email=borraro@gmail.com&tel=1234
 
-        var url =
-            "https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=" +
-                id +
-                "&name=" +
-                _nameEditingController.text +
-                "&email=" +
-                _emailEditingController.text +
-                "&tel=" +
-                _telEditingController.text;
-        Response response = await get(Uri.parse(url));
-        List<Contact> _contacts = [];
-        //aqui sacamos los datos y los metemos a un array
-        var userResponse = json.decode(response.body);
-        print(userResponse);
-        setState(() {});
-      } catch (e) {}
-    }
 
 //LA PARTE VISUAL DE LOS BOTONES DE NOMBRE Y ETC
 //User field
