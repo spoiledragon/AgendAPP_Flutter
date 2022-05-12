@@ -29,6 +29,7 @@ class _contact_pageState extends State<contact_page> {
 class Contact_List extends StatefulWidget {
   final String id;
   String id_todelete = "";
+  int id_toedit = 1;
   Contact_List(this.id);
   @override
   State<Contact_List> createState() => _Contact_ListState();
@@ -39,6 +40,7 @@ class _Contact_ListState extends State<Contact_List> {
   final _nameEditingController = TextEditingController();
   final _emailEditingController = TextEditingController();
   final _telEditingController = TextEditingController();
+  final _urlEditingController = TextEditingController();
   bool loading = true;
   List<Contact> contacts = [];
   @override
@@ -50,22 +52,25 @@ class _Contact_ListState extends State<Contact_List> {
 
   Future<void> _loadUser() async {
     try {
+      debugPrint("Entra a la func");
       var url =
           "https://thelmaxd.000webhostapp.com/Agendapp/contactos.php?userID=" +
               widget.id;
+      debugPrint("Url lista");
       Response response = await get(Uri.parse(url));
       List<Contact> _contacts = [];
       var userResponse = json.decode(response.body);
-      print(userResponse);
       for (var Contacto in userResponse) {
         _contacts.add(Contact.fromJson(Contacto));
+        debugPrint("si");
       }
       setState(() {
+        debugPrint("Actualiza");
         contacts = _contacts;
         loading = false;
       });
     } catch (e) {
-      print(e);
+      //debugPrint(e);
     }
 
     //aqui sacamos los datos y los metemos a un array
@@ -82,51 +87,35 @@ class _Contact_ListState extends State<Contact_List> {
     _loadUser();
   }
 
-      //PARA ENVIAR EL DATO NUEVO
-    void addContact(id) async {
-      
-        //https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=1&name=pedrito&email=borraro@gmail.com&tel=1234
+  //PARA ENVIAR EL DATO NUEVO
+  void addContact(id) async {
+    //https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=1&name=pedrito&email=borraro@gmail.com&tel=1234
+    var url =
+        "https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=" +
+            id +
+            "&name=" +
+            _nameEditingController.text +
+            "&email=" +
+            _emailEditingController.text +
+            "&tel=" +
+            _telEditingController.text;
+    Response response = await get(Uri.parse(url));
+    List<Contact> _contacts = [];
+    //aqui sacamos los datos y los metemos a un array
+    _loadUser();
+  }
 
-        var url =
-            "https://thelmaxd.000webhostapp.com/Agendapp/add_contact.php?id=" +
-                id +
-                "&name=" +
-                _nameEditingController.text +
-                "&email=" +
-                _emailEditingController.text +
-                "&tel=" +
-                _telEditingController.text;
-        Response response = await get(Uri.parse(url));
-        List<Contact> _contacts = [];
-        //aqui sacamos los datos y los metemos a un array
-        _loadUser();
-    }
-
-  void _showModalBottomSheet(BuildContext context,index) {
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.edit),
-                title: Text('Edit name'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('Delete'),
-                onTap: () {
-                  _delete_user(index);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        });
+  //para editar el datox
+  //https://thelmaxd.000webhostapp.com/Agendapp/edit_contact.php?id=36&url=https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png
+  void editcontact(index, ruta) async {
+    var url =
+        "https://thelmaxd.000webhostapp.com/Agendapp/edit_contact.php?id=" +
+            contacts[index].id +
+            "&url=" +
+            ruta;
+    Response response = await get(Uri.parse(url));
+    List<Contact> _contacts = [];
+    _loadUser();
   }
 
   @override
@@ -134,8 +123,6 @@ class _Contact_ListState extends State<Contact_List> {
     if (loading) {
       return Center(child: CircularProgressIndicator());
     }
-
-
 
 //LA PARTE VISUAL DE LOS BOTONES DE NOMBRE Y ETC
 //User field
@@ -197,6 +184,26 @@ class _Contact_ListState extends State<Contact_List> {
         ),
       ),
     );
+//Url Field
+    final urlField = TextFormField(
+      autofocus: false,
+      controller: _urlEditingController,
+      keyboardType: TextInputType.number,
+      maxLength: 500,
+      //validator: (){},
+      onSaved: (value) {
+        _urlEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.web),
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "URL",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
 
     //boton
     final addButton = Material(
@@ -223,6 +230,29 @@ class _Contact_ListState extends State<Contact_List> {
         ),
       ),
     );
+    //boton
+    final editButton = Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(30),
+      color: Colors.black,
+      child: MaterialButton(
+        padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        minWidth: MediaQuery.of(context).size.width,
+        onPressed: () {
+          editcontact(widget.id_toedit, _urlEditingController.text);
+          _urlEditingController.clear();
+        },
+        child: Text(
+          "Register",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
 
 //PARA DESPLEGAR MENSAJITOS BONITOS , es un toast pues
     void _showToast(BuildContext context, mensaje) {
@@ -232,6 +262,59 @@ class _Contact_ListState extends State<Contact_List> {
           content: Text(mensaje),
         ),
       );
+    }
+
+    void _showModalBottomSheet(BuildContext context, index) {
+      setState(() {
+        widget.id_toedit = index;
+      });
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text('Edit Photo'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    //SE QUITA UN MODAL Y ENTRA EL SIGUIENTE
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(400, 0, 400, 10),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                urlField,
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                editButton,
+                              ],
+                            ),
+                          );
+                        });
+
+                    //Navigator.pop(context);
+                    //_showEditModal();
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text('Delete'),
+                  onTap: () {
+                    _delete_user(index);
+                  },
+                ),
+              ],
+            );
+          });
     }
 
 //MODAL DESPLEGABLE CUANDO SE PRESIONA EL ENVIAR
@@ -287,23 +370,20 @@ class _Contact_ListState extends State<Contact_List> {
               ))
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadUser,
-        child: ListView.builder(
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () => {_showModalBottomSheet(context, index)},
-                child: ListTile(
-                  title: Text(contacts[index].name),
-                  subtitle: Text(contacts[index].email),
-                  leading: CircleAvatar(
-                      backgroundImage: NetworkImage(contacts[index].photoUrl)),
-                  trailing: Text(contacts[index].tel),
-                ),
-              );
-            },
-            itemCount: contacts.length),
-      ),
+      body: ListView.builder(
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => {_showModalBottomSheet(context, index)},
+              child: ListTile(
+                title: Text(contacts[index].name),
+                subtitle: Text(contacts[index].email),
+                leading: CircleAvatar(
+                    backgroundImage: NetworkImage(contacts[index].photoUrl)),
+                trailing: Text(contacts[index].tel),
+              ),
+            );
+          },
+          itemCount: contacts.length),
     );
   }
 }
