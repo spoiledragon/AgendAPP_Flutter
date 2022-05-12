@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchReminder() async {
     reminders.clear();
     var url =
-        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID=1';
+        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID='+widget.id;
     Response response = await get(Uri.parse(url));
     print(response.body);
 
@@ -79,18 +79,22 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                   child: Container(
                 child: RefreshIndicator(
+                  
                   onRefresh: fetchReminder,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(20),
                     itemCount: reminders.length,
                     itemBuilder: (context, index) {
                       //mando  a llamar al widget
-                      return Container(
-                        child: reminder(
-                            reminders[index].reminder,
-                            reminders[index].date,
-                            reminders[index].id,
-                            reminders[index].priority),
+                      return Column(
+                        children: [
+                          reminder(
+                              reminders[index].reminder,
+                              reminders[index].date,
+                              reminders[index].id,
+                              reminders[index].priority),
+                              SizedBox(height: 20,)
+                        ],
                       );
                     },
                   ),

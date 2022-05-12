@@ -17,7 +17,7 @@ class _reminderState extends State<reminder> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 100,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white),
         borderRadius: BorderRadius.all(Radius.circular(5)),
