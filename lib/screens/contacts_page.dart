@@ -20,19 +20,7 @@ class _contact_pageState extends State<contact_page> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        // ignore: prefer_const_constructors
-        title: Center(child: Text("Contactos")),
-        actions: [
-          IconButton(
-              onPressed: null,
-              // ignore: prefer_const_constructors
-              icon: Icon(
-                Icons.person_add,
-                color: Colors.white,
-              ))
-        ],
-      ),
+      
       body: Contact_List(widget.id),
     );
   }
@@ -228,7 +216,6 @@ class _Contact_ListState extends State<Contact_List> {
           _nameEditingController.clear();
           _emailEditingController.clear();
           _telEditingController.clear();
-          _loadUser();
         },
         child: Text(
           "Register",
@@ -291,6 +278,19 @@ class _Contact_ListState extends State<Contact_List> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showModalAdd(context),
         child: Icon(Icons.add),
+      ),
+      appBar: AppBar(
+        // ignore: prefer_const_constructors
+        title: Center(child: Text("Contactos")),
+        actions: [
+          IconButton(
+              onPressed: _loadUser,
+              // ignore: prefer_const_constructors
+              icon: Icon(
+                Icons.person_add,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _loadUser,
