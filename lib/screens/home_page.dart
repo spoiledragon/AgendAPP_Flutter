@@ -22,7 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchReminder() async {
     reminders.clear();
     var url =
-        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID='+widget.id;
+        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID=' +
+            widget.id;
     Response response = await get(Uri.parse(url));
     print(response.body);
 
@@ -44,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchReminder();
   }
 
-
   @override
   Widget build(BuildContext context) {
     //Esto si Funciona
@@ -61,8 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => contact_page(widget.id)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => contact_page(widget.id)));
               },
               icon: Icon(Icons.person))
         ],
@@ -79,7 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                   child: Container(
                 child: RefreshIndicator(
-                  
                   onRefresh: fetchReminder,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(20),
@@ -93,7 +94,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               reminders[index].date,
                               reminders[index].id,
                               reminders[index].priority),
-                              SizedBox(height: 20,)
+                          SizedBox(
+                            height: 20,
+                          )
                         ],
                       );
                     },
@@ -251,7 +254,6 @@ class _addReminderState extends State<addReminder> {
     final now = DateTime.now();
     final Meeting a = Meeting("Comida", now,
         DateTime(now.year, now.month, now.day + 4), Colors.yellow, true);
-
   }
 }
 
@@ -264,15 +266,20 @@ List<Meeting> _getDataSource() {
       DateTime(today.year, today.month, today.day + 1, 9, 0, 0);
   final DateTime endTime = startTime.add(const Duration(hours: 2));
   //x somos chavos
+  //AQUI CREAMOS UN ELEMENTO DE FECHA 4 DIAS POSTERIORES AL DE HOY EJEMPLO SI HOY ES LUNES, LA SACARA EL JUEVES- VIERNES
   final DateTime startTime2 =
       DateTime(today.year, today.month, today.day + 4, 9, 0, 0);
+  //DE LA CLASE QUE ACABAMOS DE CREAR LE VAMOS A AÑADIR EL TIEMPO CUANDO ACABA , OSEA TOMAMOS EL TIEMPO INICIAL Y LE SUMAREMOS 10 HORAS
   final DateTime endTime2 = startTime2.add(const Duration(hours: 10));
+//YA SE HA CREADO UNA CLASE "meeting" ASI QUE SOLO LE AÑADIREMOS A LA LISTA DE "meetings"
   meetings.add(Meeting(
       'Conference', startTime, endTime, const Color(0xFF0F8644), false));
+  //AQUI CREAMOS OTRA CLASE DEL TIPO "meeting" LLAMADA "a"  en la que guardo los valores que deberian de pedirsele al usuario
   final Meeting a = Meeting("Proyectacion pero que no se guarda uwu",
       startTime2, endTime2, Color(0xFF0F8644), true);
-  print(a.eventName);
+  //Y POSTERIORMENTE LE AGREGAMOS A LA LISTA DE "meetings"
   meetings.add(a);
+  print("AQUI");
   return meetings;
 }
 

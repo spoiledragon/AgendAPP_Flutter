@@ -246,7 +246,7 @@ class _Contact_ListState extends State<Contact_List> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          editcontact(
+          editcontact( 
               widget.id_toedit,
               _urlEditingController.text,
               _nameEditingController.text,
@@ -256,9 +256,10 @@ class _Contact_ListState extends State<Contact_List> {
           _nameEditingController.clear();
           _telEditingController.clear();
           _emailEditingController.clear();
+          Navigator.pop(context);
         },
         child: Text(
-          "Register",
+          "Save",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 20,
