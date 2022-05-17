@@ -214,21 +214,10 @@ class _Contact_ListState extends State<Contact_List> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          if ((_nameEditingController.text != null) ||
-              (_emailEditingController.text != null) ||
-              (_telEditingController.text != null)) {
-            addContact(widget.id);
-            _nameEditingController.clear();
-            _emailEditingController.clear();
-            _telEditingController.clear();
-          } else {
-            final scaffold = ScaffoldMessenger.of(context);
-            scaffold.showSnackBar(
-              SnackBar(
-                content: Text("FALTA POR LLENAR DATOS"),
-              ),
-            );
-          }
+          addContact(widget.id);
+          _nameEditingController.clear();
+          _emailEditingController.clear();
+          _telEditingController.clear();
         },
         child: Text(
           "Register",
@@ -250,13 +239,11 @@ class _Contact_ListState extends State<Contact_List> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          if ((_urlEditingController.text != "")) {
-            editcontact(widget.id_toedit, _urlEditingController.text);
-            _urlEditingController.clear();
-          }
+          editcontact(widget.id_toedit, _urlEditingController.text);
+          _urlEditingController.clear();
         },
         child: Text(
-          "Edit",
+          "Register",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 20,
@@ -287,26 +274,6 @@ class _Contact_ListState extends State<Contact_List> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                //aqui son las COSAS VISIBLES DE MODAL
-                Padding(
-                  padding: const EdgeInsets.symmetric(),
-                  child: Column(children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(contacts[index].photoUrl),
-                    ),
-                    Title(
-                        color: Colors.black,
-                        child: Text(contacts[index].name,style: TextStyle(fontSize: 30,letterSpacing: 2),)),
-                    Title(
-                        color: Colors.black,
-                        child: Text(contacts[index].email,style: TextStyle(fontSize: 20),)),
-                    Title(
-                        color: Colors.black,
-                        child: Text(contacts[index].tel,style: TextStyle(fontSize:20),)),
-                   
-                  ]),
-                ),
                 ListTile(
                   leading: Icon(Icons.edit),
                   title: Text('Edit Photo'),
