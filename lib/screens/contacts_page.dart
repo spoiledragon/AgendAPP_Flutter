@@ -289,6 +289,18 @@ class _Contact_ListState extends State<Contact_List> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                //aqui pondre todo lo que debe de verse
+
+                    SizedBox(height: 10,),
+                CircleAvatar(
+                    backgroundImage: NetworkImage(contacts[index].photoUrl),radius: 50,),
+                    SizedBox(height: 10,),
+                Text(contacts[index].name,style: TextStyle(fontSize: 20,letterSpacing: 2,fontWeight: FontWeight.bold),),
+                    SizedBox(height: 10,),
+                Text(contacts[index].email),
+                    SizedBox(height: 10,),
+                Text(contacts[index].tel),
+                //--------------------------------
                 ListTile(
                   leading: Icon(Icons.edit),
                   title: Text('Edit'),
