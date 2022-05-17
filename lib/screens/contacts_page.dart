@@ -107,13 +107,20 @@ class _Contact_ListState extends State<Contact_List> {
 
   //para editar el datox
   //https://thelmaxd.000webhostapp.com/Agendapp/edit_contact.php?id=36&url=https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png
-  void editcontact(index, ruta) async {
+  void editcontact(index, ruta, nombre, email, telefono) async {
     var url =
         "https://thelmaxd.000webhostapp.com/Agendapp/edit_contact.php?id=" +
             contacts[index].id +
             "&url=" +
-            ruta;
+            ruta +
+            "&name=" +
+            nombre +
+            "&email=" +
+            email +
+            "&tel=" +
+            telefono;
     Response response = await get(Uri.parse(url));
+    print(response);
     List<Contact> _contacts = [];
     _loadUser();
   }
@@ -239,8 +246,16 @@ class _Contact_ListState extends State<Contact_List> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          editcontact(widget.id_toedit, _urlEditingController.text);
+          editcontact(
+              widget.id_toedit,
+              _urlEditingController.text,
+              _nameEditingController.text,
+              _emailEditingController.text,
+              _telEditingController.text);
           _urlEditingController.clear();
+          _nameEditingController.clear();
+          _telEditingController.clear();
+          _emailEditingController.clear();
         },
         child: Text(
           "Register",
@@ -276,9 +291,15 @@ class _Contact_ListState extends State<Contact_List> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(Icons.edit),
-                  title: Text('Edit Photo'),
+                  title: Text('Edit'),
                   onTap: () {
                     Navigator.pop(context);
+                    setState(() {
+                      _emailEditingController.text = contacts[index].email;
+                      _nameEditingController.text = contacts[index].name;
+                      _telEditingController.text = contacts[index].tel;
+                      _urlEditingController.text = contacts[index].photoUrl;
+                    });
                     //SE QUITA UN MODAL Y ENTRA EL SIGUIENTE
                     showModalBottomSheet(
                         context: context,
@@ -289,11 +310,23 @@ class _Contact_ListState extends State<Contact_List> {
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
                                 SizedBox(
-                                  height: 20,
+                                  height: 10,
+                                ),
+                                nameField,
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                emailField,
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                teleField,
+                                SizedBox(
+                                  height: 10,
                                 ),
                                 urlField,
                                 SizedBox(
-                                  height: 20,
+                                  height: 10,
                                 ),
                                 editButton,
                               ],
