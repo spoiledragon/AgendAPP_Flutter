@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Email and Password Login',
       theme: ThemeData(
 
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
       ),
       home: LoginScreen(),
     );

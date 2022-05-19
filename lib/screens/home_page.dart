@@ -3,9 +3,10 @@
 import 'dart:convert';
 import 'package:agendapp/screens/contacts_page.dart';
 import 'package:agendapp/widget_done/recordatorio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:intl/intl.dart';
 
 import '../clases/reminder_class.dart';
 
@@ -22,7 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchReminder() async {
     reminders.clear();
     var url =
-        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID='+widget.id;
+        'https://thelmaxd.000webhostapp.com/Agendapp/reminders.php?userID=' +
+            widget.id;
     Response response = await get(Uri.parse(url));
     print(response.body);
 
@@ -44,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchReminder();
   }
 
-
   @override
   Widget build(BuildContext context) {
     //Esto si Funciona
@@ -61,8 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => contact_page(widget.id)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => contact_page(widget.id)));
               },
               icon: Icon(Icons.person))
         ],
@@ -79,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                   child: Container(
                 child: RefreshIndicator(
-                  
                   onRefresh: fetchReminder,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(20),
@@ -93,7 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               reminders[index].date,
                               reminders[index].id,
                               reminders[index].priority),
-                              SizedBox(height: 20,)
+                          SizedBox(
+                            height: 20,
+                          )
                         ],
                       );
                     },
@@ -103,20 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
               //center
               Expanded(
                   child: Column(
-                children: [
-                  SfCalendar(
-                    view: CalendarView.month,
-                    monthViewSettings: MonthViewSettings(showAgenda: true),
-                    backgroundColor: Colors.white,
-                    dataSource: MeetingDataSource(_getDataSource()),
-                  )
-                ],
+                children: [],
               )),
               //Derecha
               //OSEA new reminder!---------------------------------------
               Expanded(
                 child: Column(children: [
-                  addReminder(),
+                  addReminder(widget.id),
                 ]),
               ),
             ],
@@ -129,6 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class addReminder extends StatefulWidget {
   @override
+  final String id;
+  addReminder(this.id);
   State<addReminder> createState() => _addReminderState();
 }
 
@@ -136,9 +135,33 @@ class _addReminderState extends State<addReminder> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController materiaController = TextEditingController();
-  final TextEditingController diaController = TextEditingController();
+  var r_name;
+  var r_desc;
+  var r_prio;
+  var r_date;
 
+  var _CurrentSelectedDate;
+  //CALL A EL DATEPICKER
+  void callDatePicker() async {
+    var selectedDate = await getDatePickerWidget();
+    setState(() {
+      _CurrentSelectedDate = selectedDate;
+    });
+  }
+
+  Future<DateTime?> getDatePickerWidget() {
+    return showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2021),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(data: ThemeData.dark(), child: Center(child: child));
+      },
+    );
+  }
+
+  //CREAR WIDGET DATE PICKER
   @override
   Widget build(BuildContext context) {
     //CAMPO DE RECORDATORIO
@@ -152,8 +175,8 @@ class _addReminderState extends State<addReminder> {
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.recommend),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "Recordatorio",
-          labelText: "Recordatorio",
+          hintText: "Nombre",
+          labelText: "Reminder Name",
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -174,7 +197,7 @@ class _addReminderState extends State<addReminder> {
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20, 60, 20, 60),
-          labelText: "Recordatorio",
+          labelText: "Description",
           alignLabelWithHint: true,
           filled: true,
           fillColor: Colors.white,
@@ -194,12 +217,23 @@ class _addReminderState extends State<addReminder> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          //var remi = Recordatorios(nombreController.text, "22-04-2022");
-          // prueba.add(remi);
-          addMeeting();
+   
+          nombreController.clear();
+          descriptionController.clear();
+          if (nombreController.text != Null &&
+              descriptionController.text != null) {
+            setState(() {
+              r_name = nombreController.text;
+              r_desc = descriptionController.text;
+              r_date = _CurrentSelectedDate;
+            });
+            _sendReminder(context, widget.id, r_name, r_desc, r_prio, r_date);
+          } else {
+            _showToast(context, "No puedes enviar Recordatorios vacios");
+          }
         },
         child: Text(
-          "Create Activity",
+          "Create Reminder",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 20,
@@ -214,17 +248,18 @@ class _addReminderState extends State<addReminder> {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(
-            color: Colors.blue,
+            color: Colors.red,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(10)),
-      width: 300,
+      height: MediaQuery.of(context).size.height - 100,
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Form(
           key: _formKey,
           child: Column(children: <Widget>[
-            Text("Añadir Nueva Tarea", style: TextStyle(color: Colors.white)),
+            Text("Añadir Nueva Recordatorio",
+                style: TextStyle(color: Colors.white)),
             SizedBox(
               height: 20,
             ),
@@ -240,78 +275,127 @@ class _addReminderState extends State<addReminder> {
             SizedBox(
               height: 20,
             ),
+            //Para seleccionar la fecha
+            TextButton(
+                onPressed: callDatePicker,
+                //style: ButtonStyle(backgroundColor: Colors.white),
+                child: Text(
+                  "Pick Date",
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 20, letterSpacing: 1.5),
+                )),
+            //Text("$_CurrentSelectedDate",style: TextStyle(color: Colors.white)),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              "Prioridad",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            //AQUI HARE EL MODAL PARA SELECCIONAR LA PRIORIDAD
+
+            Center(
+              child: Container(
+                height: 80,
+                child: CupertinoPicker(
+                    itemExtent: 37,
+                    onSelectedItemChanged: (selectedIndex) {
+                      print(selectedIndex);
+                      if (selectedIndex == 0) {
+                        setState(() {
+                          r_prio = "High";
+                        });
+                      }
+                      if (selectedIndex == 1) {
+                        setState(() {
+                          r_prio = "Medium";
+                        });
+                      }
+                      if (selectedIndex == 2) {
+                        setState(() {
+                          r_prio = "Low";
+                        });
+                      }
+                    },
+                    children: [
+                      Text(
+                        "High",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "Medium",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "Low",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        textAlign: TextAlign.center,
+                      ),
+                    ]),
+              ),
+            ),
+            //Boton para enviar datos
             addBtn,
           ]),
         ),
       ),
     );
   }
+}
 
-  void addMeeting() {
-    final now = DateTime.now();
-    final Meeting a = Meeting("Comida", now,
-        DateTime(now.year, now.month, now.day + 4), Colors.yellow, true);
+void _sendReminder(context, id, name, descripcion, priority, date) async {
+  print("llegamos la func");
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String formatted = formatter.format(date);
+  print(formatted);
+  print(priority);
+  print(descripcion);
+  print(name);
+  print(id);
 
+  try {
+    //https://thelmaxd.000webhostapp.com/Agendapp/add_reminder.php?id=5&name=probar&description=revisarlaBD&date=19-05-2022&prio=High
+    //https://thelmaxd.000webhostapp.com/Agendapp/add_reminder.php?id=5&name=probar&description=Resar&date=19-05-2022&prio=low
+    var url =
+        "https://thelmaxd.000webhostapp.com/Agendapp/add_reminder.php?id=" +
+            id +
+            "&name=" +
+            name +
+            "&description=" +
+            descripcion +
+            "&date=" +
+            formatted +
+            "&prio=" +
+            priority;
+
+    //print(url);
+    Response response = await get(Uri.parse(url));
+    print(response.body);
+    if (response.body == "1") {
+      //Aqui es que si jalo
+      _showToast(context, "Agregado con Exito");
+
+      //Si se ha registrado hay que mostrar algo
+    }
+    if (response.body == "0") {
+      _showToast(context, "Algo Fallo");
+    }
+  } catch (e) {
+    print(e);
   }
 }
 
-//CLASE PARA LOS CALENDARIOS
-//EJEMPLO EN EL QUE SE AGREGAN DOS RECORDATORIOS
-List<Meeting> _getDataSource() {
-  final List<Meeting> meetings = <Meeting>[];
-  final DateTime today = DateTime.now();
-  final DateTime startTime =
-      DateTime(today.year, today.month, today.day + 1, 9, 0, 0);
-  final DateTime endTime = startTime.add(const Duration(hours: 2));
-  //x somos chavos
-  final DateTime startTime2 =
-      DateTime(today.year, today.month, today.day + 4, 9, 0, 0);
-  final DateTime endTime2 = startTime2.add(const Duration(hours: 10));
-  meetings.add(Meeting(
-      'Conference', startTime, endTime, const Color(0xFF0F8644), false));
-  final Meeting a = Meeting("Proyectacion pero que no se guarda uwu",
-      startTime2, endTime2, Color(0xFF0F8644), true);
-  print(a.eventName);
-  meetings.add(a);
-  return meetings;
-}
-
-class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Meeting> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
-
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
-  }
-}
-
-class Meeting {
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
-  String eventName;
-  DateTime from;
-  DateTime to;
-  Color background;
-  bool isAllDay;
+void _showToast(context, String s) {
+  final scaffold = ScaffoldMessenger.of(context);
+  scaffold.showSnackBar(
+    SnackBar(
+      content: Text(s),
+    ),
+  );
 }
