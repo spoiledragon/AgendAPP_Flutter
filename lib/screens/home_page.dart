@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../clases/reminder_class.dart';
 
@@ -107,7 +108,15 @@ class _HomeScreenState extends State<HomeScreen> {
               //center
               Expanded(
                   child: Column(
-                children: [],
+                children: [
+                  TableCalendar(
+                    
+                    firstDay: DateTime.utc(2010, 10, 16),
+                    lastDay: DateTime.utc(2030, 3, 14),
+                    focusedDay: DateTime.now(),
+                   
+                  ),
+                ],
               )),
               //Derecha
               //OSEA new reminder!---------------------------------------
@@ -122,6 +131,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
+
 }
 
 class addReminder extends StatefulWidget {
@@ -217,7 +229,6 @@ class _addReminderState extends State<addReminder> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-   
           nombreController.clear();
           descriptionController.clear();
           if (nombreController.text != Null &&
